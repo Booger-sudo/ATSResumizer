@@ -48,11 +48,59 @@ async def extract_pdf_text(pdf_path):
     resume_text = "".join(page.get_text("text") for page in doc)
     return resume_text.strip()
 
+# Extract contact information from resume
+def extract_contact_information(resume_text):
+    contact_information = []
+    lines = resume_text.split("\n")
+    for line in lines:
+        if "Professional Summary" in line:
+            break
+        contact_information.append(line)
+    return "\n".join(contact_information)
+
+# Extract education section from resume
+def extract_education_section(resume_text):
+    education_section = []
+    lines = resume_text.split("\n")
+    start = False
+    for line in lines:
+        if "Education" in line:
+            start = True
+        if start:
+            education_section.append(line)
+    return "\n".join(education_section)
+
+# Extract skills from resume
+def extract_skills(resume_text):
+    skills_section = []
+    lines = resume_text.split("\n")
+    start = False
+    for line in lines:
+        if "Skills" in line:
+            start = True
+        if start and line.strip() and "Education" not in line:
+            skills_section.append(line.strip())
+        if "Education" in line:
+            break
+    return skills_section
+
+# Select relevant skills based on job description
+def select_relevant_skills(skills, job_desc_text):
+    relevant_skills = []
+    for skill in skills:
+        if skill.lower() in job_desc_text.lower():
+            relevant_skills.append(skill)
+    return "\n".join(relevant_skills)
+
 # Rewrite resume with OpenAI
 async def rewrite_resume_with_openai(resume_text, job_desc_text):
+    education_section = extract_education_section(resume_text)
+    skills = extract_skills(resume_text)
+    relevant_skills = select_relevant_skills(skills, job_desc_text)
+    
     messages = [
         {"role": "system", "content": "You are a professional resume writer."},
-        {"role": "user", "content": f"Rewrite the following resume to better match the given job description. Make it professional, concise, and well-structured with sections like Summary, Skills, Work Experience, and Education. Ensure it follows the same layout as Base_Resume.pdf. Do not add the job description as a new work experience. Instead, choose one from existing work experience that closely relates and add it to a section called 'Relevant Work Experience' placed between the 'Professional Summary' section and the 'Work Experience' section. The Professional Summary should be at least one full paragraph.\n\nJob Description:\n{job_desc_text}\n\nOriginal Resume:\n{resume_text}\n\nOptimized Resume:"}
+        {"role": "user", "content": f"Rewrite the following resume to better match the given job description. Make it professional, concise, and well-structured with sections like Professional Summary, Relevant Work Experience, Work Experience, Skills, and Education. Ensure to keep all existing education details and use the relevant skills from the original resume that match the job description.\n\nJob Description:\n{job_desc_text}\n\nOriginal Resume:\n{resume_text}\n\nOptimized Resume with Relevant Skills:\n{relevant_skills}\n\nEducation Section:\n{education_section}"}
     ]
     
     async with aiohttp.ClientSession() as session:
@@ -98,8 +146,9 @@ async def upload_file():
             if error:
                 await flash(error)
                 return await render_template('upload.html')
+            contact_information = extract_contact_information(resume_text)  # Extract contact information here
             output_pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], 'optimized_resume.pdf')
-            create_resume_template(output_pdf_path, template_path, optimized_resume)
+            create_resume_template(output_pdf_path, template_path, optimized_resume, contact_information)
             return await send_file(output_pdf_path, as_attachment=True)
     return await render_template('upload.html')
 
