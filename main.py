@@ -97,6 +97,7 @@ def sanitize_text(text):
     unwanted_symbols = ["***", "---", "===", "~~~", "___"]
     for symbol in unwanted_symbols:
         text = text.replace(symbol, "")
+    text = text.replace("*", "")  # Remove any remaining asterisks
     return text
 
 # Rewrite resume with OpenAI
