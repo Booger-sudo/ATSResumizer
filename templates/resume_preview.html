@@ -4,18 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Preview</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>Optimized Resume Preview</h1>
-        <h2>ATS Score: {{ ats_score }}%</h2>
-        
-        <div class="resume-preview">
-            <pre>{{ resume_content }}</pre>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Resume Preview</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>ATS Score: {{ ats_score }}</h5>
+                        <pre>{{ resume_content }}</pre>
+                        <a href="{{ url_for('upload_file') }}" class="btn btn-primary btn-block">Back to Upload</a>
+                    </div>
+                    <div class="card-footer text-muted text-center">
+                        <small>Powered by ATS Resumizer</small>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <a class="download-btn" href="/uploads/optimized_resume.pdf" download="Optimized_Resume.pdf">Download Optimized Resume</a>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

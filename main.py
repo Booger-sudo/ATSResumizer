@@ -1,7 +1,7 @@
 import openai
 import os
 import aiohttp
-from quart import Quart, render_template, request, send_file, flash
+from quart import Quart, render_template, request, send_file, flash, redirect, url_for
 from dotenv import load_dotenv
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -92,6 +92,13 @@ def select_relevant_skills(skills, job_desc_text):
             relevant_skills.append(skill)
     return "\n".join(relevant_skills)
 
+# Sanitize text to remove unwanted symbols
+def sanitize_text(text):
+    unwanted_symbols = ["***", "---", "===", "~~~", "___"]
+    for symbol in unwanted_symbols:
+        text = text.replace(symbol, "")
+    return text
+
 # Rewrite resume with OpenAI
 async def rewrite_resume_with_openai(resume_text, job_desc_text):
     education_section = extract_education_section(resume_text)
@@ -121,7 +128,9 @@ async def rewrite_resume_with_openai(resume_text, job_desc_text):
                     return None, f"Error: Unable to rewrite resume. API returned status {response.status}."
                 result = await response.json()
                 if 'choices' in result:
-                    return result['choices'][0]['message']['content'].strip(), None
+                    optimized_resume = result['choices'][0]['message']['content'].strip()
+                    sanitized_resume = sanitize_text(optimized_resume)
+                    return sanitized_resume, None
                 else:
                     print("Error: 'choices' not found in OpenAI API response")
                     return None, "Error: Unable to rewrite resume. 'choices' not found in API response."
