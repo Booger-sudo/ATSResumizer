@@ -92,8 +92,6 @@ def create_pdf(output_path, resume_content):
 
 # Route to upload a file
 @app.route('/', methods=['GET', 'POST'])
-if rate_limiter and hasattr(rate_limiter, 'limit'):
-    @rate_limiter.limit("3/minute")  # Apply specific rate limit for this route if available
 async def upload_file():
     if request.method == 'POST':
         resume = (await request.files).get('resume')
