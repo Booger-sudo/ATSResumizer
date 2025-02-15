@@ -69,7 +69,7 @@ ATS Resumizer is a web application that optimizes resumes to better match job de
 - `resume_template.py`: Contains functions for creating the resume template and generating the PDF.
 - `templates/upload.html`: The HTML template for the upload form.
 - `templates/resume_preview.html`: The HTML template for the resume preview.
-- `static/styles.css`: Custom CSS styles for the web application.
+- `static/css/styles.css`: Custom CSS styles for the web application.
 - `requirements.txt`: List of required Python packages.
 - `Base_Resume.pdf`: The base template for the resume.
 
