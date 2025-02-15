@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Preview</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Optimized Resume Preview</h1>
+        <h2>ATS Score: {{ ats_score }}%</h2>
+        
+        <div class="resume-preview">
+            <pre>{{ resume_content }}</pre>
+        </div>
+        
+        <a class="download-btn" href="/uploads/optimized_resume.pdf" download="Optimized_Resume.pdf">Download Optimized Resume</a>
+    </div>
+</body>
+</html>
