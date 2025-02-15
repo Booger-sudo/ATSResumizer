@@ -1,0 +1,10 @@
+openai
+quart
+quart-rate-limiter
+aiohttp
+scikit-learn
+pymupdf
+reportlab
+python-dotenv
+numpy
+werkzeug
