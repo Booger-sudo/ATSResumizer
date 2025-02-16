@@ -2,19 +2,18 @@
 
 ATSResumizer is a web application designed to optimize resumes for Applicant Tracking Systems (ATS). It helps users rewrite their resumes to better match job descriptions, improving the chances of passing through ATS screenings.
 
-## Features
+## Functions
 
-- **Environment Variables Loading:** Utilizes `dotenv` to load environment variables, including the OpenAI API key.
-- **Quart Web Application:** Initializes a Quart web application with necessary configurations such as `UPLOAD_FOLDER` and `secret_key`.
-- **Rate Limiting:** Limits POST requests to 5 per minute using `quart_rate_limiter`.
-- **Asynchronous ATS Score Calculation:** Calculates the ATS score by comparing the resume text and job description text using TF-IDF vectorization and cosine similarity.
-- **PDF Text Extraction:** Extracts text from a PDF file asynchronously using PyMuPDF.
-- **Resume Information Extraction:** Extracts contact information, work experiences, education section, and skills from the resume text.
-- **Relevant Skills and Experiences Selection:** Selects relevant skills and 1 to 2 relevant work experiences from the resume that match the job description.
-- **Text Sanitization:** Sanitizes text by removing unwanted symbols and asterisks.
+- **Environment Variables Loading:** Utilizes `dotenv` to load environment variables.
+- **Quart Web Application:** Initializes a Quart web application for handling file uploads and generating optimized resumes.
+- **Rate Limiting:** Limits POST requests to prevent abuse and ensure fair usage.
+- **Asynchronous ATS Score Calculation:** Calculates an ATS score based on the similarity between the resume and job description.
+- **PDF Text Extraction:** Extracts text from uploaded PDF resumes.
+- **Resume Information Extraction:** Extracts contact information, work experiences, education, and skills from the resume.
+- **Relevant Skills and Experiences Selection:** Selects relevant skills and work experiences that match the job description.
+- **Text Sanitization:** Cleans up the text by removing unwanted symbols.
 - **Resume Rewriting with OpenAI:** Uses OpenAI's GPT API to rewrite the resume to better match the job description.
-- **Web Routes:** Provides routes for file upload, resume preview, and optimized resume download.
-- **PDF Generation:** Generates a PDF for the optimized resume using `fpdf`.
+- **PDF Generation:** Generates a PDF for the optimized resume.
 
 ## Installation
 
@@ -51,11 +50,7 @@ ATSResumizer is a web application designed to optimize resumes for Applicant Tra
 
 3. Upload your resume (in PDF format) and paste the job description.
 
-4. The application will extract information from your resume, calculate the ATS score, rewrite the resume to better match the job description, and generate an optimized resume PDF for download.
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request if you have any improvements or bug fixes.
+4. The application will process the resume, calculate the ATS score, rewrite the resume to match the job description, and generate an optimized resume PDF for download.
 
 ## License
 
