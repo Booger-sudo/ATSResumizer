@@ -5,7 +5,7 @@ ATS Resumizer is a web application that optimizes resumes to better match job de
 ## Features
 
 - Upload a PDF resume
-- Input a job description
+- Input a job description (use copy and paste)
 - Optimize the resume to match the job description
 - Calculate ATS score
 - Download the optimized resume as a PDF
@@ -57,7 +57,7 @@ ATS Resumizer is a web application that optimizes resumes to better match job de
 
 2. Open your web browser and go to `http://127.0.0.1:5000`.
 
-3. Upload your resume (PDF) and input the job description.
+3. Upload your resume (PDF) and input the job description (use copy and paste).
 
 4. Click on "Optimize Resume" to get the optimized resume and ATS score.
 
