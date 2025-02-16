@@ -8,3 +8,4 @@ reportlab
 python-dotenv
 numpy
 werkzeug
+pypdf2
