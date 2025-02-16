@@ -1,3 +1,4 @@
+import re
 import openai
 import os
 import aiohttp
@@ -91,11 +92,21 @@ def extract_education_section(resume_text):
     education_section = []
     lines = resume_text.split("\n")
     start = False
+    
     for line in lines:
-        if "Education" in line:
+        line_lower = line.lower()
+        
+        if re.search(r'\beducation\b', line_lower):  # Detects "Education" as a section
             start = True
+            continue  # Skip the header line itself
+        
         if start:
-            education_section.append(line)
+            if re.search(r'\b(experience|skills|certifications|projects|summary)\b', line_lower):  
+                break  # Stop at the next section
+            
+            if line.strip():  # Avoid empty lines
+                education_section.append(line.strip())
+    
     return "\n".join(education_section)
 
 # Extract skills from resume
@@ -103,21 +114,28 @@ def extract_skills(resume_text):
     skills_section = []
     lines = resume_text.split("\n")
     start = False
+    
     for line in lines:
-        if "Skills" in line:
+        line_lower = line.lower()
+        
+        if "skills" in line_lower:
             start = True
-        if start and line.strip() and "Education" not in line:
-            skills_section.append(line.strip())
-        if "Education" in line:
-            break
+            continue  # Skip the header line itself
+        
+        if start:
+            if "education" in line_lower or "certifications" in line_lower:
+                break  # Stop at education or similar section
+            
+            if line.strip():  # Avoid empty lines
+                skills_section.append(line.strip())
+    
     return skills_section
+
 
 # Select relevant skills based on job description
 def select_relevant_skills(skills, job_desc_text):
-    relevant_skills = []
-    for skill in skills:
-        if skill.lower() in job_desc_text.lower():
-            relevant_skills.append(skill)
+    job_desc_lower = job_desc_text.lower()
+    relevant_skills = {skill for skill in skills if re.search(rf'\b{re.escape(skill.lower())}\b', job_desc_lower)}
     return "\n".join(relevant_skills)
 
 # Sanitize text to remove unwanted symbols
