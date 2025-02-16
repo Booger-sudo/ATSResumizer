@@ -3,8 +3,7 @@ import os
 
 class PDF(FPDF):
     def header(self):
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, 'Optimized Resume', 0, 1, 'C')
+        pass
 
     def chapter_title(self, title):
         self.set_font('Arial', 'B', 12)
