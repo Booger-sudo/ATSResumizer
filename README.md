@@ -1,6 +1,6 @@
 # ATS Resumizer
 
-ATS Resumizer is a web application that optimizes resumes to better match job descriptions. It uses OpenAI's GPT-4 model to rewrite resumes, ensuring they are professional, concise, and well-structured. The application also calculates an ATS (Applicant Tracking System) score to determine how well the resume matches the job description.
+ATS Resumizer is a web application that optimizes resumes to better match job descriptions. It uses OpenAI's GPT-4 model to rewrite resumes, ensuring they are professional, concise, and well-structured.
 
 ## Features
 
@@ -71,7 +71,7 @@ ATS Resumizer is a web application that optimizes resumes to better match job de
 - `templates/resume_preview.html`: The HTML template for the resume preview.
 - `static/css/styles.css`: Custom CSS styles for the web application.
 - `requirements.txt`: List of required Python packages.
-- `Base_Resume.pdf`: The base template for the resume.
+- `Base_Resume.pdf`: The base template for the resume. This file needs to be in the `uploads` directory.
 
 ## Example Input Data
 
@@ -110,7 +110,7 @@ Bachelor of Science in Computer Science, State University (2016 - 2020)
 ### Sample Job Description
 
 ```
-We are looking for a talented software developer to join our team. The ideal candidate should have experience with JavaScript, React.js, and Node.js. Familiarity with Git and Agile development practices is a plus.
+We are looking for a talented software developer to join our team. The ideal candidate should have experience with JavaScript, React.js, and Node.js. Familiarity with Git and Agile development principles is a plus.
 ```
 
 ## License
