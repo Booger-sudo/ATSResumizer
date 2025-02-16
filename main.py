@@ -65,14 +65,20 @@ def extract_work_experiences(resume_text):
     experiences = []
     lines = resume_text.split("\n")
     start = False
+
     for line in lines:
         if "Work Experience" in line:
+            if start:  # Stop if "Work Experience" appears again
+                break
             start = True
+            continue  # Skip the header itself
+
         if start and line.strip() and "Education" not in line and "Skills" not in line:
             experiences.append(line.strip())
+
         if "Education" in line or "Skills" in line:
             break
-    return experiences
+    return experiences  # Fix variable name (was 'experience')
 
 def sort_work_experiences_by_date(experiences):
     def extract_dates(experience):
