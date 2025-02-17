@@ -19,7 +19,7 @@ ATSResumizer is a web application designed to optimize resumes for Applicant Tra
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/ATSResumizer.git
+    git clone https://github.com/Booger-sudo/ATSResumizer.git
     cd ATSResumizer
     ```
 
