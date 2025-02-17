@@ -6,5 +6,5 @@ scikit-learn
 PyMuPDF
 numpy
 werkzeug
-fpdf==
+fpdf
 quart-rate-limiter
