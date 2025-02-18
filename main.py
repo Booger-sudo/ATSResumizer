@@ -2,7 +2,7 @@ import re
 import openai
 import os
 import aiohttp
-from quart import Quart, render_template, request, send_file, flash, redirect, url_for
+from quart import Quart, render_template, request, send_file, flash
 from dotenv import load_dotenv
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -10,7 +10,7 @@ import fitz  # PyMuPDF for PDF extraction
 import asyncio
 import numpy as np
 from werkzeug.utils import secure_filename  # To secure filenames
-from resume_template import create_resume_template
+from resume_template import create_resume_template, create_resume_docx
 from datetime import datetime
 import webbrowser
 
@@ -25,18 +25,6 @@ app.secret_key = 'supersecretkey'  # Needed for flashing messages
 # Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
-
-# Check if quart_rate_limiter and Limit are available
-try:
-    from quart_rate_limiter import RateLimiter, Limit
-    rate_limiter = RateLimiter(app)
-    if hasattr(rate_limiter, 'add_rule'):
-        rate_limiter.add_rule(Limit("5/minute"), methods=["POST"])  # Limit to 5 POST requests per minute
-    else:
-        print("Warning: 'add_rule' method not found in RateLimiter. Rate limiting rules not applied.")
-except ImportError:
-    rate_limiter = None
-    print("Warning: quart_rate_limiter or Limit is not available. Rate limiting will be disabled.")
 
 # Asynchronous ATS Score Calculation
 async def calculate_ats_score(resume_text, job_desc_text):
@@ -79,7 +67,7 @@ def extract_work_experiences(resume_text):
 
         if "Education" in line or "Skills" in line:
             break
-    return experiences  # Fix variable name (was 'experience')
+    return experiences
 
 def sort_work_experiences_by_date(experiences):
     def extract_dates(experience):
@@ -125,19 +113,18 @@ def extract_skills(resume_text):
     for line in lines:
         line_lower = line.lower()
         
-        if "skills" in line_lower:
+        if "skills" in line.lower():
             start = True
             continue  # Skip the header line itself
         
         if start:
-            if "education" in line_lower or "certifications" in line_lower:
+            if "education" in line.lower() or "certifications" in line.lower():
                 break  # Stop at education or similar section
             
             if line.strip():  # Avoid empty lines
                 skills_section.append(line.strip())
     
     return skills_section
-
 
 # Select relevant skills based on job description
 def select_relevant_skills(skills, job_desc_text):
@@ -164,10 +151,13 @@ async def rewrite_resume_with_openai(resume_text, job_desc_text):
     for exp in sorted_work_experiences:
         if len(relevant_experiences) < 2 and any(skill.lower() in exp.lower() for skill in relevant_skills.split("\n")):
             relevant_experiences.append(exp)
+    
+    # Ensure only 5 work experiences max are included and avoid duplication
+    top_work_experiences = relevant_experiences + [exp for exp in sorted_work_experiences if exp not in relevant_experiences][:5-len(relevant_experiences)]
 
     messages = [
         {"role": "system", "content": "You are a professional resume writer."},
-        {"role": "user", "content": f"Rewrite the following resume to better match the given job description. Make it professional, concise, and well-structured with sections like Professional Summary, Work Experience, Education, and Skills. Here is the resume:\n{resume_text}\nHere is the job description:\n{job_desc_text}"}
+        {"role": "user", "content": f"Rewrite the following resume to better match the given job description. Make it professional, concise, and well-structured with sections like Professional Summary, Work Experience (max 5 entries), Skills, Education, etc.\n\nResume:\n{resume_text}\n\nJob Description:\n{job_desc_text}"}
     ]
 
     async with aiohttp.ClientSession() as session:
@@ -204,6 +194,7 @@ async def upload_file():
     if request.method == 'POST':
         resume = (await request.files).get('resume')
         job_desc_text = (await request.form).get('job_description')
+        file_format = (await request.form).get('file_format')
         template_path = os.path.join(app.config['UPLOAD_FOLDER'], 'Base_Resume.pdf')
         if resume and job_desc_text:
             filename = secure_filename(resume.filename)  # Secure the filename
@@ -222,11 +213,15 @@ async def upload_file():
             contact_information = extract_contact_information(resume_text)  # Extract contact information here
             work_experiences = extract_work_experiences(resume_text)  # Extract work experiences here
             sorted_work_experiences = sort_work_experiences_by_date(work_experiences)
-            top_work_experiences = "\n".join(sorted_work_experiences[:3])  # Get top 3 most recent work experiences
+            top_work_experiences = "\n".join(sorted_work_experiences[:5])  # Get top 5 most relevant work experiences
             education_section = extract_education_section(resume_text)  # Extract education section here
-            output_pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], 'optimized_resume.pdf')
-            create_resume_template(output_pdf_path, template_path, optimized_resume, contact_information, top_work_experiences, education_section)
-            return await send_file(output_pdf_path, as_attachment=True)
+            if file_format == 'pdf':
+                output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'optimized_resume.pdf')
+                create_resume_template(output_path, template_path, optimized_resume, contact_information, top_work_experiences, education_section)
+            elif file_format == 'docx':
+                output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'optimized_resume.docx')
+                create_resume_docx(output_path, optimized_resume, contact_information, top_work_experiences, education_section)
+            return await send_file(output_path, as_attachment=True)
     return await render_template('upload.html')
 
 @app.route('/resume-preview')

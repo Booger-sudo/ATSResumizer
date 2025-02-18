@@ -1,5 +1,6 @@
 from fpdf import FPDF
 import os
+import docx
 
 class PDF(FPDF):
     def header(self):
@@ -46,3 +47,32 @@ def create_resume_template(output_path, template_path, optimized_resume, contact
             pdf.chapter_body(body)
 
     pdf.output(output_path, 'F')
+
+def create_resume_docx(output_path, optimized_resume, contact_information, work_experiences, education_section):
+    doc = docx.Document()
+
+    sections = {
+        'Contact Information': contact_information,
+        'Professional Summary': '',
+        'Work Experience': work_experiences,
+        'Education': education_section,
+        'Skills': '',
+        'Certifications and Licenses': ''
+    }
+
+    # Extract sections from optimized_resume
+    current_section = None
+    for line in optimized_resume.split('\n'):
+        line = line.strip()
+        if line in sections:
+            current_section = line
+        elif current_section:
+            sections[current_section] += line + '\n'
+
+    # Add sections to the DOCX
+    for title, body in sections.items():
+        if body.strip():
+            doc.add_heading(title, level=1)
+            doc.add_paragraph(body)
+
+    doc.save(output_path)
