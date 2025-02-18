@@ -12,13 +12,14 @@ import numpy as np
 from werkzeug.utils import secure_filename  # To secure filenames
 from resume_template import create_resume_template
 from datetime import datetime
+import webbrowser
 
 # Load environment variables
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Quart(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['UPLOAD_FOLDER'] = os.path.abspath('uploads/')
 app.secret_key = 'supersecretkey'  # Needed for flashing messages
 
 # Ensure upload folder exists
@@ -206,6 +207,10 @@ async def upload_file():
         template_path = os.path.join(app.config['UPLOAD_FOLDER'], 'Base_Resume.pdf')
         if resume and job_desc_text:
             filename = secure_filename(resume.filename)  # Secure the filename
+            # Ensure the filename does not contain any directory traversal characters
+            if '..' in filename or '/' in filename or '\\' in filename:
+                await flash("Invalid filename")
+                return await render_template('upload.html')
             resume_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             await resume.save(resume_path)
             resume_text = await extract_pdf_text(resume_path)
@@ -231,4 +236,7 @@ async def resume_preview():
     return await render_template('resume_preview.html', resume_content=optimized_resume, ats_score=ats_score)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = 5000
+    url = f"http://127.0.0.1:{port}"
+    webbrowser.open(url)
+    app.run(debug=True, port=port)
