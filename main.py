@@ -19,7 +19,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Quart(__name__)
-app.config['UPLOAD_FOLDER'] = os.path.abspath('uploads/')
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.expanduser("~"), "ATSResumizer_uploads")
 app.secret_key = 'supersecretkey'  # Needed for flashing messages
 
 # Ensure upload folder exists
