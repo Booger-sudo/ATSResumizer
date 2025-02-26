@@ -252,7 +252,7 @@ async def upload_file():
         resume = (await request.files).get('resume')
         job_desc_text = (await request.form).get('job_description')
         file_format = (await request.form).get('file_format')
-        template_path = os.path.join(app.config['UPLOAD_FOLDER'], 'Base_Resume.pdf')
+        template_path = os.path.join(app.config['UPLOAD_FOLDER'], 'Base_Resume.pdf')#test another template 'stylish_resume_template.pdf'
         if resume and job_desc_text:
             filename = secure_filename(resume.filename)
             print(f"Uploaded resume filename: {filename}")
