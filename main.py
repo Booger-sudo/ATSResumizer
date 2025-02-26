@@ -30,7 +30,7 @@ app.secret_key = os.getenv("SECRET_KEY", 'supersecretkey')  # Needed for flashin
 # Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
-
+#Add weight to section for better ats scores
 # Asynchronous ATS Score Calculation
 async def calculate_ats_score(resume_text, job_desc_text):
     print("Calculating ATS score...")
