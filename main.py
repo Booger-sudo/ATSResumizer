@@ -32,11 +32,26 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Asynchronous ATS Score Calculation
-#Add weight to sections for better ATS accuracy 
+# Add weight to sections for better ATS accuracy 
 async def calculate_ats_score(resume_text, job_desc_text):
     print("Calculating ATS score...")
     vectorizer = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = vectorizer.fit_transform([resume_text, job_desc_text])
+    
+    # Extract sections
+    work_experiences = extract_work_experiences(resume_text)
+    education_section = extract_education_section(resume_text)
+    skills_section = extract_skills(resume_text)
+    certifications_section = extract_certifications_licenses(resume_text)
+    
+    # Combine sections with weights
+    weighted_resume_text = (
+        " ".join(work_experiences) * 0.5 +  # 50% weight
+        education_section * 0.15 +  # 15% weight
+        " ".join(skills_section) * 0.2 +  # 20% weight
+        certifications_section * 0.1  # 10% weight
+    )
+    
+    tfidf_matrix = vectorizer.fit_transform([weighted_resume_text, job_desc_text])
     similarity_score = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
     print(f"ATS score calculated: {similarity_score}")
     return round(similarity_score * 100, 2)
@@ -253,7 +268,7 @@ async def upload_file():
         resume = (await request.files).get('resume')
         job_desc_text = (await request.form).get('job_description')
         file_format = (await request.form).get('file_format')
-        template_path = os.path.join(app.config['UPLOAD_FOLDER'], 'Base_Resume.pdf')#test another template 'stylish_resume_template.pdf'
+        template_path = os.path.join(app.config['UPLOAD_FOLDER'], 'stylish_resume_template.pdf')#test another template 'stylish_resume_template.pdf'
         if resume and job_desc_text:
             filename = secure_filename(resume.filename)
             print(f"Uploaded resume filename: {filename}")

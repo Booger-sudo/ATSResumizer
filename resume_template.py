@@ -12,7 +12,7 @@ class PDF(FPDF):
         self.set_font('DejaVu', '', 12)
         self.multi_cell(0, 10, body)
         self.ln()  # Add space after the body
-#Swap Skills and Education section so that Skills comes before Education. 
+ 
 def create_resume_template(output_path, template_path, optimized_resume, contact_information, relevant_experiences, work_experiences, education_section, certifications_and_licenses):
     pdf = PDF()
     pdf.add_page()
@@ -24,8 +24,8 @@ def create_resume_template(output_path, template_path, optimized_resume, contact
         'Professional Summary': '',
         'Relevant Experience': relevant_experiences,
         'Work Experience': work_experiences,
+        'Skills': '',   
         'Education': education_section,
-        'Skills': '',
         'Certifications and Licenses': certifications_and_licenses
     }
 
